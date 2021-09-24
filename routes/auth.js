@@ -4,10 +4,7 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../keys");
-
-router.get("/", (req, res) => {
-  res.send("Hello");
-});
+const requireLogin = require("../middleware/requireLogin");
 
 router.post("/signup", async (req, res) => {
   try {
@@ -56,6 +53,10 @@ router.post("/signin", async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+});
+
+router.get("/protected", requireLogin, (req, res) => {
+  res.send("hello user");
 });
 
 module.exports = router;
