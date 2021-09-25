@@ -3,7 +3,7 @@ const router = express.Router();
 const Post = require("../models/posts");
 const requireLogin = require("../middleware/requireLogin");
 
-router.get("/posts", async (req, res) => {
+router.get("/posts", requireLogin, async (req, res) => {
   try {
     const posts = await Post.find().populate("postedBy", "_id name");
     res.status(200).json({
@@ -20,13 +20,18 @@ router.get("/posts", async (req, res) => {
 
 router.post("/createPost", requireLogin, async (req, res) => {
   try {
-    const { title, body } = req.body;
-    if (!title || !body) {
+    const { title, body, pic } = req.body;
+    if (!title || !body || !pic) {
       res.status(422).json({ error: "Please add all the fields" });
     }
 
     req.user.password = undefined;
-    const post = await Post.create({ title, body, postedBy: req.user });
+    const post = await Post.create({
+      title,
+      body,
+      photo: pic,
+      postedBy: req.user,
+    });
     res.status(200).json({
       status: "success",
       post,

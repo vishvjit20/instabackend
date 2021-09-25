@@ -7,7 +7,7 @@ const postSchema = new mongoose.Schema({
     required: true,
   },
   body: { type: String, required: true },
-  photo: { type: String, default: "no photo" },
+  photo: { type: String, required: true },
   postedBy: { type: ObjectId, ref: "User" },
 });
 

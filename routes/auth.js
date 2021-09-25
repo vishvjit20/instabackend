@@ -23,12 +23,12 @@ router.post("/signup", async (req, res) => {
     });
 
     res.status(200).json({
-      status: "success",
+      message: "Data saved successfully",
       user: newUser,
     });
   } catch (err) {
     res.status(400).json({
-      status: "failed",
+      error: "failed to signup",
       data: newUser,
     });
   }
@@ -48,7 +48,8 @@ router.post("/signin", async (req, res) => {
     if (match) {
       // return res.status(200).json({ message: "Sign in successful" });
       const token = await jwt.sign({ _id: user._id }, JWT_SECRET);
-      res.status(200).json({ token });
+	  const {_id, name, email} = user;
+      res.status(200).json({ token, user:{_id, name, email} });
     } else return res.status(422).json({ error: "Invalid email / password" });
   } catch (err) {
     console.log(err);
