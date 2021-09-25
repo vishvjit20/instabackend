@@ -60,4 +60,34 @@ router.get("/myposts", requireLogin, async (req, res) => {
   }
 });
 
+router.put("/like", requireLogin, (req, res) => {
+  Post.findByIdAndUpdate(
+    req.body.postId,
+    {
+      $push: { likes: req.user._id },
+    },
+    {
+      new: true,
+    }
+  ).exec((err, res) => {
+    if (err) return res.status(422).json({ err });
+    else res.json(res);
+  });
+});
+
+router.put("/unlike", requireLogin, (req, res) => {
+  Post.findByIdAndUpdate(
+    req.body.postId,
+    {
+      $pull: { likes: req.user._id },
+    },
+    {
+      new: true,
+    }
+  ).exec((err, res) => {
+    if (err) return res.status(422).json({ err });
+    else res.json(res);
+  });
+});
+
 module.exports = router;
