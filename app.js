@@ -6,6 +6,7 @@ const { MONGOURI } = require("./keys");
 const User = require("./models/user");
 const Post = require("./models/posts");
 const postRoutes = require("./routes/post");
+const userRoutes = require("./routes/user");
 // const cors = require("cors");
 
 const PORT = 5000;
@@ -18,6 +19,7 @@ mongoose
 app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/post", postRoutes);
+app.use("/user", userRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running at port ${PORT}`);
