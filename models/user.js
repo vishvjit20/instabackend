@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const { ObjectId } = mongoose.Schema.Types;
 const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
@@ -16,6 +17,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "password is required"],
   },
+  followers: [{ type: ObjectId, ref: "User" }],
+  following: [{ type: ObjectId, ref: "User" }],
 });
 
 userSchema.pre("save", async function (next) {
