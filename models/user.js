@@ -17,6 +17,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "password is required"],
   },
+  resetToken: String,
+  expireToken: Date,
   pic: {
     type: String,
     default:

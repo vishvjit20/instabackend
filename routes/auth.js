@@ -2,9 +2,22 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../keys");
 const requireLogin = require("../middleware/requireLogin");
+const nodemailer = require("nodemailer");
+const sendgridTransport = require("nodemailer-sendgrid-transport");
+const { API_KEY, EMAIL } = require("../keys");
+const { getMaxListeners } = require("process");
+
+const transporter = nodemailer.createTransport(
+  sendgridTransport({
+    auth: {
+      api_key: API_KEY,
+    },
+  })
+);
 
 router.post("/signup", async (req, res) => {
   try {
@@ -59,8 +72,30 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-router.get("/protected", requireLogin, (req, res) => {
-  res.send("hello user");
+router.post("/reset-password", (req, res) => {
+  crypto.randomBytes(32, (err, buffer) => {
+    if (err) console.log(err);
+    const token = buffer.toString("hex");
+    User.findOne({ email: req.body.email }).then((user) => {
+      if (!user)
+        return res
+          .status(422)
+          .json({ error: "User doesn't exist with such email" });
+      user.resetToken = token;
+      user.expireToken = Date.now() + 3600000;
+      user.save().then((result) => {
+        transporter.sendMail({
+          from: EMAIL,
+          to: user.email,
+          subject: "Password Reset",
+          html: `<p>You requested for password change, </p>
+          <h5><a href="http://localhost:3000/reset/${token}">Click</a> below link to reset the password </h5>`,
+        });
+
+        res.json({ message: "Check your email" });
+      });
+    });
+  });
 });
 
 module.exports = router;
