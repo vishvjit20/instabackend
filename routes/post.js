@@ -20,6 +20,23 @@ router.get("/posts", requireLogin, async (req, res) => {
   }
 });
 
+router.get("/getsubsposts", requireLogin, async (req, res) => {
+  try {
+    const posts = await Post.find({ postedBy: { $in: req.user.following } })
+      .populate("postedBy", "_id name")
+      .populate("comments.postedBy", "_id name");
+    res.status(200).json({
+      status: "success",
+      posts,
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      error: err,
+    });
+  }
+});
+
 router.post("/createPost", requireLogin, async (req, res) => {
   try {
     const { title, body, pic } = req.body;

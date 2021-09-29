@@ -17,6 +17,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "password is required"],
   },
+  pic: {
+    type: String,
+    default:
+      "https://res.cloudinary.com/vibhu/image/upload/v1632903603/jkdpwnou00kcbqn6pelh.png",
+  },
   followers: [{ type: ObjectId, ref: "User" }],
   following: [{ type: ObjectId, ref: "User" }],
 });
