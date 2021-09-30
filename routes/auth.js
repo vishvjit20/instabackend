@@ -98,4 +98,25 @@ router.post("/reset-password", (req, res) => {
   });
 });
 
+router.post("/newPassword", (req, res) => {
+  const newPassword = req.body.password;
+  const sentToken = req.body.token;
+  User.findOne({
+    resetToken: sentToken,
+    expireToken: { $gt: Date.now() },
+  })
+    .then((user) => {
+      if (!user) {
+        return res.status(422).json({ error: "Try again, session expired!" });
+      }
+      user.password = newPassword;
+      user.resetToken = undefined;
+      user.expireToken = undefined;
+      user.save().then((savedUser) => {
+        res.json({ message: "Password updated successfully" });
+      });
+    })
+    .catch((err) => console.log(err));
+});
+
 module.exports = router;
